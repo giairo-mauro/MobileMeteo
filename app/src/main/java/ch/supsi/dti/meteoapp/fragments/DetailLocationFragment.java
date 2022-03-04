@@ -48,27 +48,5 @@ public class DetailLocationFragment extends Fragment {
 
         return v;
     }
-
-    // Menu
-
-    /*@Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_detail_location, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_back:
-                Toast toast = Toast.makeText(getActivity(),
-                        "Add a location",
-                        Toast.LENGTH_SHORT);
-                toast.show();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }*/
 }
 
