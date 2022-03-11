@@ -33,21 +33,13 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_single_fragment);
+        setContentView(R.layout.fragment_detail_location);
 
+        UUID locationId = (UUID) getIntent().getSerializableExtra(EXTRA_LOCATION_ID);
         mViewPager = findViewById(R.id.my_view_pager);
         mLocations = LocationsHolder.get(this).getLocations();
 
         FragmentManager fm = getSupportFragmentManager();
-
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
-        if (fragment == null) {
-            UUID locationId = (UUID) getIntent().getSerializableExtra(EXTRA_LOCATION_ID);
-            fragment = DetailLocationFragment.newInstance(locationId);
-            fm.beginTransaction()
-                    .add(R.id.fragment_container, fragment)
-                    .commit();
-        }
 
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
             @Override
@@ -60,5 +52,12 @@ public class DetailActivity extends AppCompatActivity {
                 return mLocations.size();
             }
         });
+
+        for (int i = 0; i < mLocations.size(); i++) {
+            if (mLocations.get(i).getId().equals(locationId)) {
+                mViewPager.setCurrentItem(i);
+                break;
+            }
+        }
     }
 }
