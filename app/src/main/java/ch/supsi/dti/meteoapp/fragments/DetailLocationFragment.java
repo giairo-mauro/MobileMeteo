@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ public class DetailLocationFragment extends Fragment {
 
     private Location mLocation;
     private TextView mIdTextView;
+    private ImageView mImageView;
 
     public static DetailLocationFragment newInstance(UUID locationId) {
         Bundle args = new Bundle();
@@ -48,8 +50,11 @@ public class DetailLocationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_single_fragment, container, false);
 
-        mIdTextView = v.findViewById(R.id.id_textView);
+        mIdTextView = v.findViewById(R.id.location);
         mIdTextView.setText(mLocation.getName());
+
+        mImageView = v.findViewById(R.id.imageView);
+        mImageView.setImageResource(R.drawable.color_expand_weather_01);
 
         return v;
     }

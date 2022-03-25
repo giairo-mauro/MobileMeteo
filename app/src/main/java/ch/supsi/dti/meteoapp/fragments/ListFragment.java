@@ -1,25 +1,30 @@
 package ch.supsi.dti.meteoapp.fragments;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
 import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.activities.DetailActivity;
-import ch.supsi.dti.meteoapp.model.LocationsHolder;
+import ch.supsi.dti.meteoapp.activities.MainActivity;
+import ch.supsi.dti.meteoapp.activities.OnDialogResultListener;
 import ch.supsi.dti.meteoapp.model.Location;
+import ch.supsi.dti.meteoapp.model.LocationsHolder;
 
 public class ListFragment extends Fragment {
     private RecyclerView mLocationRecyclerView;
@@ -57,14 +62,33 @@ public class ListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add:
-                Toast toast = Toast.makeText(getActivity(),
-                        "Add a location",
-                        Toast.LENGTH_SHORT);
-                toast.show();
+                showDialogAndGetResult("Add new location", "Location", "City", ((MainActivity)getActivity()));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    public void showDialogAndGetResult(final String title, final String message, final String initialText, final OnDialogResultListener listener) {
+
+        final EditText editText = new EditText(((MainActivity)getActivity()));
+        editText.setText(initialText);
+
+        new AlertDialog.Builder(((MainActivity)getActivity()))
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (listener != null) {
+                            listener.onDialogResult(editText.getText().toString());
+                        }
+                        //Toast.makeText(getBaseContext(), "Testo: " + editText.getText().toString(), Toast.LENGTH_LONG).show();
+                    }
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .setView(editText)
+                .show();
     }
 
     // Holder
