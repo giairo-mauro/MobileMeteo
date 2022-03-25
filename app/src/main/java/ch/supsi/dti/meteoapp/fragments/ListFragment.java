@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.activities.DetailActivity;
@@ -61,11 +62,12 @@ public class ListFragment extends Fragment {
                 e.printStackTrace();
             }
             assert addresses != null;
-            String name = addresses.get(0).getLocality();
-            currentLoc.setName(name);
+            String country = addresses.get(0).getCountryName();
+            String city = addresses.get(0).getLocality();
+            currentLoc.setCity(city);
+            currentLoc.setCountry(country);
             locations.set(0, currentLoc);
         }else {
-            currentLoc.setName("posizione non disponibile");
             locations.set(0, currentLoc);
         }
         mAdapter = new LocationAdapter(locations);
@@ -117,7 +119,8 @@ public class ListFragment extends Fragment {
 
         public void bind(Location location) {
             mLocation = location;
-            mNameTextView.setText(mLocation.getName());
+            String text = mLocation.getCity() + ", " + mLocation.getCountry();
+            mNameTextView.setText(text);
         }
     }
 

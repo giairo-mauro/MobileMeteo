@@ -1,11 +1,7 @@
 package ch.supsi.dti.meteoapp.model;
 
-import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.util.Log;
-
-import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +24,12 @@ public class LocationsHolder {
     private LocationsHolder(Context context) {
         mLocations = new ArrayList<>();
         mLocations.add(0, new Location());
-        for (int i = 1; i < 10; i++) {
-            Location location = new Location();
-            location.setName("Location # " + i);
-            mLocations.add(i, location);
-        }
+        new Thread(() -> {
+            List<Location> locations = MainActivity.getDb().personDao().getLocations();
+            for (int i = 0; i < locations.size(); i++) {
+                mLocations.add(i + 1, locations.get(i));
+            }
+        }).start();
     }
 
     public List<Location> getLocations() {

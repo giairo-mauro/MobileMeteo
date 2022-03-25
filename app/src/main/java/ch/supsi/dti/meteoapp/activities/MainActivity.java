@@ -17,6 +17,7 @@ import java.util.Locale;
 
 import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.fragments.ListFragment;
+import ch.supsi.dti.meteoapp.model.AppDatabase;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
@@ -25,13 +26,16 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fm;
     private Fragment[] fragment;
 
+    private static AppDatabase db;
     private static Location currentLoc;
     private static Geocoder geoLocation;
 
+    public static AppDatabase getDb(){
+        return db;
+    }
     public static Location getCurrentLoc() {
         return currentLoc;
     }
-
     public static Geocoder getGeoLocation() {
         return geoLocation;
     }
@@ -39,6 +43,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        db = AppDatabase.getInstance(this);
+
+
+        new Thread(() -> {
+            ch.supsi.dti.meteoapp.model.Location location = new ch.supsi.dti.meteoapp.model.Location("Crotone", "Italia", "25");
+            db.personDao().insertLocation(location);
+        }).start();
+        new Thread(() -> {
+            ch.supsi.dti.meteoapp.model.Location location2 = new ch.supsi.dti.meteoapp.model.Location("Messico city", "Messico", "30");
+            db.personDao().insertLocation(location2);
+        }).start();
+        new Thread(() -> {
+            ch.supsi.dti.meteoapp.model.Location location3 = new ch.supsi.dti.meteoapp.model.Location("Parigi", "Francia", "20");
+            db.personDao().insertLocation(location3);
+        }).start();
+        new Thread(() -> {
+            ch.supsi.dti.meteoapp.model.Location location4 = new ch.supsi.dti.meteoapp.model.Location("Citta fredda", "Polo nord", "1");
+            db.personDao().insertLocation(location4);
+        }).start();
+
         setContentView(R.layout.fragment_single_fragment);
         fm = getSupportFragmentManager();
         fragment = new Fragment[]{fm.findFragmentById(R.id.fragment_container)};
