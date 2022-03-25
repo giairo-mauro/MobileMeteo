@@ -1,10 +1,9 @@
 package ch.supsi.dti.meteoapp.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.location.Address;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,12 +13,20 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.activities.DetailActivity;
-import ch.supsi.dti.meteoapp.model.LocationsHolder;
+import ch.supsi.dti.meteoapp.activities.MainActivity;
 import ch.supsi.dti.meteoapp.model.Location;
+import ch.supsi.dti.meteoapp.model.LocationsHolder;
 
 public class ListFragment extends Fragment {
     private RecyclerView mLocationRecyclerView;
@@ -39,6 +46,30 @@ public class ListFragment extends Fragment {
         mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         List<Location> locations = LocationsHolder.get(getActivity()).getLocations();
+
+        Location currentLoc = new Location();
+        List<Address> addresses = null;
+
+        if(MainActivity.getCurrentLoc() != null) {
+            //Get location info and set as first element title
+            try {
+                addresses = MainActivity.getGeoLocation().getFromLocation(MainActivity.getCurrentLoc().getLatitude(),
+                        MainActivity.getCurrentLoc().getLongitude(), 1);
+                if (addresses.size() > 0) {
+                    System.out.println(addresses.get(0).getLocality());
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+            }
+            assert addresses != null;
+            String country = addresses.get(0).getCountryName();
+            String city = addresses.get(0).getLocality();
+            currentLoc.setCity(city);
+            currentLoc.setCountry(country);
+            locations.set(0, currentLoc);
+        }else {
+            locations.set(0, currentLoc);
+        }
         mAdapter = new LocationAdapter(locations);
         mLocationRecyclerView.setAdapter(mAdapter);
 
@@ -48,11 +79,12 @@ public class ListFragment extends Fragment {
     // Menu
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_list, menu);
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -70,7 +102,7 @@ public class ListFragment extends Fragment {
     // Holder
 
     private class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private TextView mNameTextView;
+        private final TextView mNameTextView;
         private Location mLocation;
 
         public LocationHolder(LayoutInflater inflater, ViewGroup parent) {
@@ -87,21 +119,23 @@ public class ListFragment extends Fragment {
 
         public void bind(Location location) {
             mLocation = location;
-            mNameTextView.setText(mLocation.getName());
+            String text = mLocation.getCity() + ", " + mLocation.getCountry();
+            mNameTextView.setText(text);
         }
     }
 
     // Adapter
 
     private class LocationAdapter extends RecyclerView.Adapter<LocationHolder> {
-        private List<Location> mLocations;
+        private final List<Location> mLocations;
 
         public LocationAdapter(List<Location> locations) {
             mLocations = locations;
         }
 
+        @NonNull
         @Override
-        public LocationHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public LocationHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
             return new LocationHolder(layoutInflater, parent);
         }

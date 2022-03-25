@@ -49,7 +49,8 @@ public class DetailLocationFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_single_fragment, container, false);
 
         mIdTextView = v.findViewById(R.id.id_textView);
-        mIdTextView.setText(mLocation.getName());
+        String text = mLocation.getCity() + ", " + mLocation.getCountry();
+        mIdTextView.setText(text);
 
         return v;
     }

@@ -3,6 +3,9 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/giair/Documents/SUPSI/6 semestre/Mobile/MobileMeteo/app/src/main/res/layout/fragment_detail_location.xml" value="0.11302083333333333" />
+        <entry key="..\:/Users/giair/Documents/SUPSI/6 semestre/Mobile/MobileMeteo/app/src/main/res/layout/fragment_list.xml" value="0.11302083333333333" />
+        <entry key="..\:/Users/giair/Documents/SUPSI/6 semestre/Mobile/MobileMeteo/app/src/main/res/layout/fragment_single_fragment.xml" value="0.11302083333333333" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.222" />
         <entry key="app/src/main/res/layout/fragment_detail.xml" value="0.22056159420289856" />
         <entry key="app/src/main/res/layout/fragment_detail_location.xml" value="0.22056159420289856" />
