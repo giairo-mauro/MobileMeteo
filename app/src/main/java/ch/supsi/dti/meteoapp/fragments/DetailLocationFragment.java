@@ -51,7 +51,8 @@ public class DetailLocationFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_single_fragment, container, false);
 
         mIdTextView = v.findViewById(R.id.location);
-        mIdTextView.setText(mLocation.getName());
+        String text = mLocation.getCity() + ", " + mLocation.getCountry();
+        mIdTextView.setText(text);
 
         mImageView = v.findViewById(R.id.imageView);
         mImageView.setImageResource(R.drawable.color_expand_weather_01);

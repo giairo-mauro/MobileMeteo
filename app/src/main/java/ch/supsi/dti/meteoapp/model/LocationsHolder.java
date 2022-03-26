@@ -1,10 +1,13 @@
 package ch.supsi.dti.meteoapp.model;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import ch.supsi.dti.meteoapp.activities.MainActivity;
 
 public class LocationsHolder {
 
@@ -20,11 +23,13 @@ public class LocationsHolder {
 
     private LocationsHolder(Context context) {
         mLocations = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            Location location = new Location();
-            location.setName("Location # " + i);
-            mLocations.add(location);
-        }
+        mLocations.add(0, new Location());
+        new Thread(() -> {
+            List<Location> locations = MainActivity.getDb().personDao().getLocations();
+            for (int i = 0; i < locations.size(); i++) {
+                mLocations.add(i + 1, locations.get(i));
+            }
+        }).start();
     }
 
     public List<Location> getLocations() {
