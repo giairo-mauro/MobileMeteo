@@ -24,12 +24,18 @@ public class LocationsHolder {
     private LocationsHolder(Context context) {
         mLocations = new ArrayList<>();
         mLocations.add(0, new Location());
-        new Thread(() -> {
+
+        Thread t = new Thread(() -> {
             List<Location> locations = MainActivity.getDb().personDao().getLocations();
             for (int i = 0; i < locations.size(); i++) {
-                mLocations.add(i + 1, locations.get(i));
+                mLocations.add(i+1, locations.get(i));
             }
-        }).start();
+        });
+        t.start();
+
+        try {
+            t.join();
+        } catch (InterruptedException e) {}
     }
 
     public List<Location> getLocations() {
