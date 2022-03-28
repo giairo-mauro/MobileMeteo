@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,6 +25,8 @@ import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
 
 public class MainActivity extends AppCompatActivity implements OnDialogResultListener {
+    private Fragment fragment;
+    private FragmentManager fm;
 
     private static AppDatabase db;
     private static Location currentLoc;
@@ -44,41 +47,19 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
         super.onCreate(savedInstanceState);
         db = AppDatabase.getInstance(this);
 
-
-        /*new Thread(() -> {
-            ch.supsi.dti.meteoapp.model.Location location = new ch.supsi.dti.meteoapp.model.Location("Crotone", "Italia", "25");
-            db.personDao().insertLocation(location);
-
-            ch.supsi.dti.meteoapp.model.Location location2 = new ch.supsi.dti.meteoapp.model.Location("Messico city", "Messico", "30");
-            db.personDao().insertLocation(location2);
-
-            ch.supsi.dti.meteoapp.model.Location location3 = new ch.supsi.dti.meteoapp.model.Location("Parigi", "Francia", "20");
-            db.personDao().insertLocation(location3);
-
-            ch.supsi.dti.meteoapp.model.Location location4 = new ch.supsi.dti.meteoapp.model.Location("Citta fredda", "Polo nord", "1");
-            db.personDao().insertLocation(location4);
-        }).start();*/
-
         setContentView(R.layout.activity_main);
-        FragmentManager fm = getSupportFragmentManager();
+        fm = getSupportFragmentManager();
         //fragment = new Fragment[]{fm.findFragmentById(R.id.fragment_container)};
-        Fragment fragment = fm.findFragmentById(R.id.fragment_container);
+        fragment = fm.findFragmentById(R.id.fragment_container);
 
 
         //Ask for location access or create list
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
+            Log.i("locationsTest", "ASKING");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }else{
             locationGranted();
-        }
-
-        if(fragment == null){
-            fragment = new ListFragment();
-
-            fm.beginTransaction()
-                    .add(R.id.list_fragment_container, fragment)
-                    .commit();
         }
     }
 
@@ -93,25 +74,29 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
                 .continuous()
                 .config(builder.build())
                 .start(location -> {
+                    //Seti location
                     currentLoc = location;
                     geoLocation = new Geocoder(this, Locale.getDefault());
-
-                    /*if (fragment == null) {
+                    //Set list fragment
+                    if(fragment == null){
                         fragment = new ListFragment();
+
                         fm.beginTransaction()
-                                .add(R.id.fragment_container, fragment)
+                                .add(R.id.list_fragment_container, fragment)
                                 .commit();
-                    }*/
+                    }
                 });
     }
 
     private void locationDenied(){
-        /*if (fragment == null) {
+        //Set list fragment
+        if(fragment == null){
             fragment = new ListFragment();
+
             fm.beginTransaction()
-                    .add(R.id.fragment_container, fragment)
+                    .add(R.id.list_fragment_container, fragment)
                     .commit();
-        }*/
+        }
     }
 
     @Override
@@ -123,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
                                            @NonNull int[] grantResults) {
         switch (requestCode) {
             case 0:
+                Log.i("locationsTest", "GETTING ANSWER");
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 &&
                         grantResults[0] == PackageManager.PERMISSION_GRANTED) {
