@@ -32,6 +32,7 @@ import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.activities.DetailActivity;
 import ch.supsi.dti.meteoapp.activities.MainActivity;
 import ch.supsi.dti.meteoapp.activities.OnDialogResultListener;
+import ch.supsi.dti.meteoapp.model.AppDatabase;
 import ch.supsi.dti.meteoapp.model.Location;
 import ch.supsi.dti.meteoapp.model.LocationsHolder;
 
@@ -44,7 +45,6 @@ public class ListFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,18 +72,23 @@ public class ListFragment extends Fragment {
             String country = addresses.get(0).getCountryName();
             String city = addresses.get(0).getLocality();
             currentLoc.setCity(city);
-            currentLoc.setCountry(country);
             locations.set(0, currentLoc);
         }else {
             locations.set(0, currentLoc);
         }
 
-
-
         mAdapter = new LocationAdapter(locations);
         mLocationRecyclerView.setAdapter(mAdapter);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mAdapter == null) {}
+        else
+            mAdapter.notifyDataSetChanged();
     }
 
     // Menu
@@ -112,7 +117,6 @@ public class ListFragment extends Fragment {
 
         new AlertDialog.Builder(((MainActivity)getActivity()))
                 .setTitle(title)
-                .setMessage(message)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -147,7 +151,7 @@ public class ListFragment extends Fragment {
 
         public void bind(Location location) {
             mLocation = location;
-            String text = mLocation.getCity() + ", " + mLocation.getCountry();
+            String text = mLocation.getCity();
             mNameTextView.setText(text);
         }
     }

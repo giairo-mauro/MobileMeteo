@@ -51,7 +51,7 @@ public class DetailLocationFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_single_fragment, container, false);
 
         mIdTextView = v.findViewById(R.id.location);
-        String text = mLocation.getCity() + ", " + mLocation.getCountry();
+        String text = mLocation.getCity();
         mIdTextView.setText(text);
 
         mImageView = v.findViewById(R.id.imageView);

@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,12 +15,16 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.fragments.ListFragment;
 import ch.supsi.dti.meteoapp.model.AppDatabase;
+import ch.supsi.dti.meteoapp.model.LocationsHolder;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
 
         setContentView(R.layout.activity_main);
         fm = getSupportFragmentManager();
+        //fragment = new Fragment[]{fm.findFragmentById(R.id.fragment_container)};
         fragment = fm.findFragmentById(R.id.fragment_container);
 
         /*RequestQueue requestQueue;
@@ -124,6 +130,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
         //Ask for location access or create list
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_DENIED) {
+            Log.i("locationsTest", "ASKING");
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 0);
         }else{
             locationGranted();
@@ -132,16 +139,15 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
 
     private void locationGranted(){
         LocationParams.Builder builder = new LocationParams.Builder()
-                .setAccuracy(LocationAccuracy.HIGH)
-                .setDistance(0)
-                .setInterval(5000); // 5 sec
+                .setAccuracy(LocationAccuracy.LOW)
+                .setDistance(0);
 
         SmartLocation.with(this)
                 .location()
                 .continuous()
                 .config(builder.build())
                 .start(location -> {
-                    //Seti location
+                    //Set location
                     currentLoc = location;
                     geoLocation = new Geocoder(this, Locale.getDefault());
                     //Set list fragment
@@ -168,7 +174,16 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
 
     @Override
     public void onDialogResult(String result) {
-        Toast.makeText(this, result, Toast.LENGTH_LONG).show();
+        Thread t = new Thread(() -> {
+            ch.supsi.dti.meteoapp.model.Location location = new ch.supsi.dti.meteoapp.model.Location(result);
+            db.personDao().insertLocation(location);
+            LocationsHolder.get(this).getLocations().add(location);
+        });
+        t.start();
+
+        try {
+            t.join();
+        } catch (InterruptedException e) {}
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -192,3 +207,4 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
         return context;
     }
 }
+
