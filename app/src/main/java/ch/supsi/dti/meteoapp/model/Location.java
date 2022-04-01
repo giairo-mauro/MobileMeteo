@@ -15,21 +15,15 @@ public class Location {
     private UUID id;
 
     private String city;
-    private String country;
-    private String degrees;
 
-    public Location(String city, String country, String degrees) {
+    public Location(String city) {
         this.id = UUID.randomUUID();
         this.city = city;
-        this.country = country;
-        this.degrees = degrees;
     }
     @Ignore
     public Location() {
         this.id = UUID.randomUUID();
         this.city = null;
-        this.country = null;
-        this.degrees = null;
     }
 
     public String getCity() {
@@ -38,22 +32,6 @@ public class Location {
 
     public void setCity(String city) {
         this.city = city;
-    }
-
-    public String getCountry() {
-        return country;
-    }
-
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getDegrees() {
-        return degrees;
-    }
-
-    public void setDegrees(String degrees) {
-        this.degrees = degrees;
     }
 
     public UUID getId() {
