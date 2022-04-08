@@ -1,12 +1,15 @@
 package ch.supsi.dti.meteoapp.activities;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,11 +17,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.fragments.ListFragment;
@@ -27,6 +28,11 @@ import ch.supsi.dti.meteoapp.model.LocationsHolder;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
+
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import ch.supsi.dti.meteoapp.model.Weather;
 
 public class MainActivity extends AppCompatActivity implements OnDialogResultListener {
     private Fragment fragment;
@@ -63,12 +69,24 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
         }else{
             locationGranted();
         }
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("default", "WEATHER_CHANNEL", NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Weather informations");
+            mNotificationManager.createNotificationChannel(channel);
+        }
+
+        PeriodicWorkRequest periodicRequest = new PeriodicWorkRequest.Builder(Weather.class, 15, TimeUnit.MINUTES).build();
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork("POLL WORK", ExistingPeriodicWorkPolicy.KEEP, periodicRequest);
     }
 
     private void locationGranted(){
         LocationParams.Builder builder = new LocationParams.Builder()
                 .setAccuracy(LocationAccuracy.LOW)
-                .setDistance(0);
+                .setDistance(0)
+                .setInterval(5000);
 
         SmartLocation.with(this)
                 .location()
@@ -116,15 +134,16 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
-        if (requestCode == 0) {
-            Log.i("locationsTest", "GETTING ANSWER");
-            // If request is cancelled, the result arrays are empty.
-            if (grantResults.length > 0 &&
-                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                locationGranted();
-            } else {
-                locationDenied();
-            }
+        switch (requestCode) {
+            case 0:
+                Log.i("locationsTest", "GETTING ANSWER");
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 &&
+                        grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    locationGranted();
+                } else {
+                    locationDenied();
+                }
         }
         // Other 'case' lines to check for other
         // permissions this app might request.

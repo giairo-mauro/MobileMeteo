@@ -1,7 +1,6 @@
 package ch.supsi.dti.meteoapp.fragments;
 
 import android.content.DialogInterface;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.location.Address;
 import android.os.Bundle;
@@ -14,25 +13,19 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.activities.DetailActivity;
 import ch.supsi.dti.meteoapp.activities.MainActivity;
 import ch.supsi.dti.meteoapp.activities.OnDialogResultListener;
-import ch.supsi.dti.meteoapp.model.AppDatabase;
 import ch.supsi.dti.meteoapp.model.Location;
 import ch.supsi.dti.meteoapp.model.LocationsHolder;
 
@@ -69,7 +62,7 @@ public class ListFragment extends Fragment {
                 e.printStackTrace();
             }
             assert addresses != null;
-            String country = addresses.get(0).getCountryName();
+
             String city = addresses.get(0).getLocality();
             currentLoc.setCity(city);
             locations.set(0, currentLoc);
@@ -86,8 +79,7 @@ public class ListFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mAdapter == null) {}
-        else
+        if (mAdapter != null)
             mAdapter.notifyDataSetChanged();
     }
 

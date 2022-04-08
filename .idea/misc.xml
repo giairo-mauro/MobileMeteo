@@ -8,11 +8,13 @@
         <entry key="..\:/Users/giair/Documents/SUPSI/6 semestre/Mobile/MobileMeteo/app/src/main/res/layout/fragment_list.xml" value="0.11302083333333333" />
         <entry key="..\:/Users/giair/Documents/SUPSI/6 semestre/Mobile/MobileMeteo/app/src/main/res/layout/fragment_single_fragment.xml" value="0.11302083333333333" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.222" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.11262014208106978" />
         <entry key="app/src/main/res/layout/fragment_detail.xml" value="0.22056159420289856" />
         <entry key="app/src/main/res/layout/fragment_detail_location.xml" value="0.22056159420289856" />
         <entry key="app/src/main/res/layout/fragment_list.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_single_fragment.xml" value="0.22056159420289856" />
         <entry key="app/src/main/res/layout/list_item.xml" value="0.22056159420289856" />
+        <entry key="app/src/main/res/layout/test_layout.xml" value="0.10607434270172257" />
         <entry key="app/src/main/res/menu/fragment_list.xml" value="0.3333333333333333" />
       </map>
     </option>
