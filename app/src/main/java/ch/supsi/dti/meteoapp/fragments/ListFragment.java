@@ -2,8 +2,11 @@ package ch.supsi.dti.meteoapp.fragments;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,6 +22,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import androidx.annotation.NonNull;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -28,6 +33,12 @@ import ch.supsi.dti.meteoapp.activities.MainActivity;
 import ch.supsi.dti.meteoapp.activities.OnDialogResultListener;
 import ch.supsi.dti.meteoapp.model.Location;
 import ch.supsi.dti.meteoapp.model.LocationsHolder;
+import ch.supsi.dti.meteoapp.model.OnTaskCompleted;
+import ch.supsi.dti.meteoapp.model.weatherFetch.FetchCountry;
+import ch.supsi.dti.meteoapp.model.weatherFetch.FetchImg;
+import ch.supsi.dti.meteoapp.model.weatherFetch.FetchTemp;
+import ch.supsi.dti.meteoapp.model.weatherFetch.Weather;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ListFragment extends Fragment {
     private RecyclerView mLocationRecyclerView;
@@ -104,10 +115,10 @@ public class ListFragment extends Fragment {
 
     public void showDialogAndGetResult(final String title, final String message, final String initialText, final OnDialogResultListener listener) {
 
-        final EditText editText = new EditText(((MainActivity)getActivity()));
+        final EditText editText = new EditText(getActivity());
         editText.setText(initialText);
 
-        new AlertDialog.Builder(((MainActivity)getActivity()))
+        new AlertDialog.Builder(getActivity())
                 .setTitle(title)
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -115,7 +126,6 @@ public class ListFragment extends Fragment {
                         if (listener != null) {
                             listener.onDialogResult(editText.getText().toString());
                         }
-                        //Toast.makeText(getBaseContext(), "Testo: " + editText.getText().toString(), Toast.LENGTH_LONG).show();
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -124,15 +134,16 @@ public class ListFragment extends Fragment {
     }
 
     // Holder
-
-    private class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    private class LocationHolder extends RecyclerView.ViewHolder implements View.OnClickListener, OnTaskCompleted {
         private final TextView mNameTextView;
         private Location mLocation;
+        private CircleImageView mWeatherImage;
 
         public LocationHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.list_item, parent, false));
             itemView.setOnClickListener(this);
             mNameTextView = itemView.findViewById(R.id.name);
+            mWeatherImage = itemView.findViewById(R.id.country_flag);
         }
 
         @Override
@@ -143,8 +154,39 @@ public class ListFragment extends Fragment {
 
         public void bind(Location location) {
             mLocation = location;
-            String text = mLocation.getCity();
+            String text = null;
+            //Get location and country
+            if(mLocation.getCity() != null) {
+                FetchCountry c = new FetchCountry(mLocation.getCity(), LocationHolder.this);
+                c.execute();
+                FetchTemp t = new FetchTemp(mLocation.getCity(), LocationHolder.this);
+                t.execute();
+                //Get weather image
+                FetchImg i = new FetchImg(mLocation.getCity(), LocationHolder.this);
+                i.execute();
+                text = mLocation.getCity();
+            }else{
+                text = "Location nonexistent";
+            }
             mNameTextView.setText(text);
+        }
+
+        @Override
+        public void OnTextGet(String data) {
+            mNameTextView.append(", "+ data);
+        }
+
+        @Override
+        public void OnTempGet(String temperature) {
+            mNameTextView.append(", "+ temperature);
+        }
+
+        @Override
+        public void onImageGet(byte[] img) {
+            if(img != null) {
+                Bitmap b = BitmapFactory.decodeByteArray(img, 0, img.length);
+                mWeatherImage.setImageBitmap(b);
+            }
         }
     }
 
