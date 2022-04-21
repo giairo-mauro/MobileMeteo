@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -37,11 +38,12 @@ public class DetailActivity extends AppCompatActivity {
 
         UUID locationId = (UUID) getIntent().getSerializableExtra(EXTRA_LOCATION_ID);
         mViewPager = findViewById(R.id.my_view_pager);
-        mLocations = LocationsHolder.get(this).getLocations();
+        mLocations = LocationsHolder.get().getLocations();
 
         FragmentManager fm = getSupportFragmentManager();
 
         mViewPager.setAdapter(new FragmentStatePagerAdapter(fm, FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
+            @NonNull
             @Override
             public Fragment getItem(int position) {
                 UUID l = mLocations.get(position).getId();

@@ -1,8 +1,5 @@
 package ch.supsi.dti.meteoapp.model;
 
-import android.content.Context;
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -14,14 +11,14 @@ public class LocationsHolder {
     private static LocationsHolder sLocationsHolder;
     private List<Location> mLocations;
 
-    public static LocationsHolder get(Context context) {
+    public static LocationsHolder get() {
         if (sLocationsHolder == null)
-            sLocationsHolder = new LocationsHolder(context);
+            sLocationsHolder = new LocationsHolder();
 
         return sLocationsHolder;
     }
 
-    private LocationsHolder(Context context) {
+    private LocationsHolder() {
         mLocations = new ArrayList<>();
         mLocations.add(0, new Location());
 
@@ -35,7 +32,7 @@ public class LocationsHolder {
 
         try {
             t.join();
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignored) {}
     }
 
     public List<Location> getLocations() {

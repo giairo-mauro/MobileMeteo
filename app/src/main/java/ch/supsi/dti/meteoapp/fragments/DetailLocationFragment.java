@@ -42,8 +42,9 @@ public class DetailLocationFragment extends Fragment implements OnTaskCompleted 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        assert getArguments() != null;
         UUID locationId = (UUID) getArguments().getSerializable(ARG_LOCATION_ID);
-        mLocation = LocationsHolder.get(getActivity()).getLocation(locationId);
+        mLocation = LocationsHolder.get().getLocation(locationId);
         //Get location and country
         Log.i("weatherTEST", "LOG:"+ mLocation.getCity());
         if(mLocation.getCity() != null) {

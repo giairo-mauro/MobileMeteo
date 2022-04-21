@@ -1,12 +1,11 @@
 package ch.supsi.dti.meteoapp.fragments;
 
-import android.content.DialogInterface;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,8 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import androidx.annotation.NonNull;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -37,7 +34,6 @@ import ch.supsi.dti.meteoapp.model.OnTaskCompleted;
 import ch.supsi.dti.meteoapp.model.weatherFetch.FetchCountry;
 import ch.supsi.dti.meteoapp.model.weatherFetch.FetchImg;
 import ch.supsi.dti.meteoapp.model.weatherFetch.FetchTemp;
-import ch.supsi.dti.meteoapp.model.weatherFetch.Weather;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ListFragment extends Fragment {
@@ -56,7 +52,7 @@ public class ListFragment extends Fragment {
         mLocationRecyclerView = view.findViewById(R.id.recycler_view);
         mLocationRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        List<Location> locations = LocationsHolder.get(getActivity()).getLocations();
+        List<Location> locations = LocationsHolder.get().getLocations();
 
         Location currentLoc = new Location();
         List<Address> addresses = null;
@@ -87,6 +83,7 @@ public class ListFragment extends Fragment {
         return view;
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public void onResume() {
         super.onResume();
@@ -106,26 +103,23 @@ public class ListFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_add:
-                showDialogAndGetResult("Add new location", "Location", "City", ((MainActivity)getActivity()));
+                showDialogAndGetResult("Add new location", "City", ((MainActivity)getActivity()));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    public void showDialogAndGetResult(final String title, final String message, final String initialText, final OnDialogResultListener listener) {
+    public void showDialogAndGetResult(final String title, final String initialText, final OnDialogResultListener listener) {
 
         final EditText editText = new EditText(getActivity());
         editText.setText(initialText);
 
-        new AlertDialog.Builder(getActivity())
+        new AlertDialog.Builder(requireActivity())
                 .setTitle(title)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (listener != null) {
-                            listener.onDialogResult(editText.getText().toString());
-                        }
+                .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                    if (listener != null) {
+                        listener.onDialogResult(editText.getText().toString());
                     }
                 })
                 .setNegativeButton(android.R.string.cancel, null)
@@ -154,7 +148,7 @@ public class ListFragment extends Fragment {
 
         public void bind(Location location) {
             mLocation = location;
-            String text = null;
+            String text;
             //Get location and country
             if(mLocation.getCity() != null) {
                 FetchCountry c = new FetchCountry(mLocation.getCity(), LocationHolder.this);

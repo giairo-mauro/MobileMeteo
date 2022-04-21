@@ -18,8 +18,6 @@ public class Location {
     @NonNull
     private UUID id;
     private String city;
-    @Ignore
-    private Weather weather;
 
     public Location(String city) {
         this.id = UUID.randomUUID();
@@ -43,14 +41,7 @@ public class Location {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(@NonNull UUID id) {
         this.id = id;
-    }
-
-    public Weather getWeather() {
-        return weather;
-    }
-    public void setWeather(Weather weather) {
-        this.weather = weather;
     }
 }

@@ -1,7 +1,6 @@
 package ch.supsi.dti.meteoapp.activities;
 
 import android.Manifest;
-import android.content.Context;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -12,7 +11,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -21,12 +19,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -35,14 +34,10 @@ import ch.supsi.dti.meteoapp.R;
 import ch.supsi.dti.meteoapp.fragments.ListFragment;
 import ch.supsi.dti.meteoapp.model.AppDatabase;
 import ch.supsi.dti.meteoapp.model.LocationsHolder;
+import ch.supsi.dti.meteoapp.model.Weather;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
-
-import androidx.work.ExistingPeriodicWorkPolicy;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-import ch.supsi.dti.meteoapp.model.Weather;
 
 public class MainActivity extends AppCompatActivity implements OnDialogResultListener {
     private Fragment fragment;
@@ -51,8 +46,6 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
     private static AppDatabase db;
     private static Location currentLoc;
     private static Geocoder geoLocation;
-
-    private static Context context;
 
     public static AppDatabase getDb(){
         return db;
@@ -67,14 +60,12 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getApplicationContext();
         db = AppDatabase.getInstance(this);
 
         setContentView(R.layout.activity_main);
         fm = getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.fragment_container);
 
-        boolean connected = false;
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
@@ -147,24 +138,21 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
                 URL url = new URL("https://api.openweathermap.org/data/2.5/weather?q=" + location.getCity() + "&appid=1ae729fe4329fe7bb3784f5931d6643b");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                InputStream in = connection.getInputStream();
+                //Test connection
+                new ByteArrayOutputStream();
+                connection.getInputStream();
                 db.personDao().insertLocation(location);
-                LocationsHolder.get(this).getLocations().add(location);
+                LocationsHolder.get().getLocations().add(location);
             //Toast if city does not exists
             } catch (IOException e) {
-                e.printStackTrace();MainActivity.this.runOnUiThread(new Runnable() {
-                    public void run() {
-                        Toast.makeText(MainActivity.this, "City nonexistent", Toast.LENGTH_SHORT).show();
-                    }
-                });
+                e.printStackTrace();MainActivity.this.runOnUiThread(() -> Toast.makeText(MainActivity.this, "City nonexistent", Toast.LENGTH_SHORT).show());
             }
         });
         t.start();
 
         try {
             t.join();
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignored) {}
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
@@ -178,14 +166,11 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
                     locationGranted();
                 } else {
                     locationDenied();
+                    Toast.makeText(MainActivity.this, "Activate localisation to see the weather in your area", Toast.LENGTH_SHORT).show();
                 }
         }
         // Other 'case' lines to check for other
         // permissions this app might request.
-    }
-
-    public static Context getContext(){
-        return context;
     }
 }
 
