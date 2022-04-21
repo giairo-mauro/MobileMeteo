@@ -21,9 +21,9 @@ public class LocationsHolder {
     private LocationsHolder() {
         mLocations = new ArrayList<>();
         mLocations.add(0, new Location());
-
+        //Create Locations list from db
         Thread t = new Thread(() -> {
-            List<Location> locations = MainActivity.getDb().personDao().getLocations();
+            List<Location> locations = MainActivity.getDb().locationDAO().getLocations();
             for (int i = 0; i < locations.size(); i++) {
                 mLocations.add(i+1, locations.get(i));
             }

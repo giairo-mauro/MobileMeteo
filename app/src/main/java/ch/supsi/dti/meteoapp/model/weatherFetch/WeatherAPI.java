@@ -13,16 +13,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 //Class that
-public class Weather {
+public class WeatherAPI {
 
     private String weatherDataAPI = "https://api.openweathermap.org/data/2.5/weather?";
     private String weatherImgAPI = "https://openweathermap.org/img/wn/";
     private String img;
     private final String API_KEY = "1ae729fe4329fe7bb3784f5931d6643b";
 
-    public Weather(){}
+    public WeatherAPI(){}
 
-    //json.getJSONArray("weather").getJSONObject(0).getString("description");
     public byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -73,7 +72,7 @@ public class Weather {
                 case "temp":
                     result = json.getJSONObject("main").getString("temp");
                     //Convert temperature in Celsius
-                    result = Math.round(Float.parseFloat(result) - 273.15) +"°C";
+                    result = String.valueOf(Math.round(Float.parseFloat(result) - 273.15));
                     break;
                 case "country":
                     result = json.getJSONObject("sys").getString("country");

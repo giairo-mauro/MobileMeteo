@@ -1,7 +1,6 @@
 package ch.supsi.dti.meteoapp.model.weatherFetch;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import ch.supsi.dti.meteoapp.model.OnTaskCompleted;
 
@@ -16,7 +15,7 @@ public class FetchImg extends AsyncTask<Void, Void, byte[]> {
 
     @Override
     protected byte[] doInBackground(Void... voids) {
-        return new Weather().fetchImg(city);
+        return new WeatherAPI().fetchImg(city);
     }
 
     @Override

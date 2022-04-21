@@ -16,7 +16,7 @@ public class FetchCountry extends AsyncTask<Void, Void, String> {
 
     @Override
     protected String doInBackground(Void... voids) {
-        return new Weather().fetchItems(city, "country");
+        return new WeatherAPI().fetchItems(city, "country");
     }
 
     @Override

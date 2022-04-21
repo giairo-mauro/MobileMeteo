@@ -11,6 +11,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
         fm = getSupportFragmentManager();
         fragment = fm.findFragmentById(R.id.fragment_container);
 
+        //Check if internet available
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
                 connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
@@ -81,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
         else
             Toast.makeText(MainActivity.this, "Internet not available", Toast.LENGTH_SHORT).show();
 
+        //Create notification manager
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -98,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
                 .setAccuracy(LocationAccuracy.LOW)
                 .setDistance(0)
                 .setInterval(5000);
-
+        //Get the current location and then open the fragment
         SmartLocation.with(this)
                 .location()
                 .continuous()
@@ -141,7 +144,7 @@ public class MainActivity extends AppCompatActivity implements OnDialogResultLis
                 //Test connection
                 new ByteArrayOutputStream();
                 connection.getInputStream();
-                db.personDao().insertLocation(location);
+                db.locationDAO().insertLocation(location);
                 LocationsHolder.get().getLocations().add(location);
             //Toast if city does not exists
             } catch (IOException e) {

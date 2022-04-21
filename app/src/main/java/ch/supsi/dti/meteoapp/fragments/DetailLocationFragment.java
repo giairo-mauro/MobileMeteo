@@ -46,7 +46,6 @@ public class DetailLocationFragment extends Fragment implements OnTaskCompleted 
         UUID locationId = (UUID) getArguments().getSerializable(ARG_LOCATION_ID);
         mLocation = LocationsHolder.get().getLocation(locationId);
         //Get location and country
-        Log.i("weatherTEST", "LOG:"+ mLocation.getCity());
         if(mLocation.getCity() != null) {
             FetchCountry c = new FetchCountry(mLocation.getCity(), DetailLocationFragment.this);
             c.execute();
@@ -61,7 +60,7 @@ public class DetailLocationFragment extends Fragment implements OnTaskCompleted 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_single_fragment, container, false);
-
+        //Get view element and set initial data
         mIdTextView = v.findViewById(R.id.location);
         mTempTextView = v.findViewById(R.id.textTemp);
         String text = mLocation.getCity();
@@ -75,17 +74,19 @@ public class DetailLocationFragment extends Fragment implements OnTaskCompleted 
 
     @Override
     public void OnTextGet(String weather) {
+        //Set first text
         mIdTextView.append(", "+ weather);
-        Log.i("weatherTEST", "Weather: "+ weather);
     }
 
     @Override
     public void OnTempGet(String temperature) {
-        mTempTextView.setText(temperature);
+        //Set temperature
+        mTempTextView.setText(temperature +"°C");
     }
 
     @Override
     public void onImageGet(byte[] img) {
+        //Set new image
         if(img != null) {
             Bitmap b = BitmapFactory.decodeByteArray(img, 0, img.length);
             mImageView.setImageBitmap(b);

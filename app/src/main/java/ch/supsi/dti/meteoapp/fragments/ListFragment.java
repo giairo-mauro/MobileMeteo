@@ -62,9 +62,6 @@ public class ListFragment extends Fragment {
             try {
                 addresses = MainActivity.getGeoLocation().getFromLocation(MainActivity.getCurrentLoc().getLatitude(),
                         MainActivity.getCurrentLoc().getLongitude(), 1);
-                if (addresses.size() > 0) {
-                    System.out.println(addresses.get(0).getLocality());
-                }
             }catch (IOException e) {
                 e.printStackTrace();
             }
@@ -92,7 +89,6 @@ public class ListFragment extends Fragment {
     }
 
     // Menu
-
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
@@ -101,6 +97,7 @@ public class ListFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        //Show dialog to add a location
         switch (item.getItemId()) {
             case R.id.menu_add:
                 showDialogAndGetResult("Add new location", "City", ((MainActivity)getActivity()));
@@ -111,7 +108,6 @@ public class ListFragment extends Fragment {
     }
 
     public void showDialogAndGetResult(final String title, final String initialText, final OnDialogResultListener listener) {
-
         final EditText editText = new EditText(getActivity());
         editText.setText(initialText);
 
@@ -172,7 +168,7 @@ public class ListFragment extends Fragment {
 
         @Override
         public void OnTempGet(String temperature) {
-            mNameTextView.append(", "+ temperature);
+            mNameTextView.append(", "+ temperature +"°C");
         }
 
         @Override

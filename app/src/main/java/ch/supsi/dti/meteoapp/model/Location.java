@@ -1,16 +1,11 @@
 package ch.supsi.dti.meteoapp.model;
 
-import android.util.Log;
-
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import java.util.UUID;
-
-import ch.supsi.dti.meteoapp.model.weatherFetch.FetchTemp;
-import ch.supsi.dti.meteoapp.model.weatherFetch.Weather;
 
 @Entity
 public class Location {
